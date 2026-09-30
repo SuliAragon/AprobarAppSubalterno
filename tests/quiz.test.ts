@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { selectQuestions, type Question } from '../src/quiz.ts';
-const q = (id: string, topic: number): Question => ({ id, topic, section: 'Prueba', prompt: id, options: ['A','B','C','D'], answer: 0, explanation: 'Explicación', source: {kind:'manual',label:'Temario',reference:'p. 6'}, format:'concepto' });
+const q = (id: string, topic: number): Question => ({ id, topic, section: 'Prueba', prompt: id, options: ['A','B','C','D'], answer: 0, explanation: 'Explicación', optionExplanations: ['Explicación','Error B','Error C','Error D'], source: {kind:'manual',label:'Temario',reference:'p. 6'}, format:'concepto' });
 test('selecciona sólo los temas pedidos, sin repeticiones y sin alterar el banco', () => {
   const bank=[q('a',1),q('b',2),q('c',1),q('d',3)];
   const original=bank.map(item=>item.id);

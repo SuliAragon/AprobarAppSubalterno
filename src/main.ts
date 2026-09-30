@@ -1,5 +1,6 @@
 import './style.css';
 import { validateBank } from './bank.ts';
+import { explainAnswer } from './explanation.ts';
 import { QuizSession, selectQuestions, summarizeAnswers, type Question } from './quiz.ts';
 
 const topics = [
@@ -80,7 +81,7 @@ function renderQuiz() {
     const correct = !!record && i === q.answer;
     const wrong = !!record && i === record.chosen && !record.correct;
     return `<button class="option ${correct ? 'correct' : ''} ${wrong ? 'wrong' : ''}" data-answer="${i}" ${record ? 'disabled' : ''}><span class="letter">${letters[i]}</span><span class="option-text">${escape(option)}</span>${correct || wrong ? `<span class="answer-state">${correct ? '✓ Correcta' : '✕ Tu respuesta'}</span>` : ''}</button>`;
-  }).join('')}</div>${record ? `<div id="feedback" class="feedback ${record.correct ? 'success' : 'failure'}" role="status" tabindex="-1"><strong>${record.correct ? '✓ Has acertado' : `✕ Has fallado · La correcta es ${letters[q.answer]}`}</strong><p>${escape(q.explanation)}</p>${source(q)}</div>` : ''}<div class="question-bottom"><span class="keyboard">Teclado: 1–4 para responder · Intro para continuar</span><button class="primary next" id="next" ${!record ? 'disabled' : ''}>${s.index === s.questions.length - 1 ? 'Ver resultado' : 'Siguiente pregunta'} <span aria-hidden="true">→</span></button></div></div></section>`;
+  }).join('')}</div>${record ? `<div id="feedback" class="feedback ${record.correct ? 'success' : 'failure'}" role="status" tabindex="-1"><strong>${record.correct ? '✓ Has acertado' : `✕ Has fallado · La correcta es ${letters[q.answer]}`}</strong><p>${escape(explainAnswer(q, record.chosen))}</p>${source(q)}</div>` : ''}<div class="question-bottom"><span class="keyboard">Teclado: 1–4 para responder · Intro para continuar</span><button class="primary next" id="next" ${!record ? 'disabled' : ''}>${s.index === s.questions.length - 1 ? 'Ver resultado' : 'Siguiente pregunta'} <span aria-hidden="true">→</span></button></div></div></section>`;
   app.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach(button => button.addEventListener('click', () => choose(Number(button.dataset.answer))));
   app.querySelector('#next')!.addEventListener('click', next);
   app.querySelector('#leave')!.addEventListener('click', () => {
@@ -100,7 +101,7 @@ function renderResults() {
   app.innerHTML = `<section class="result-header"><p class="eyebrow">SESIÓN COMPLETADA</p><h1 id="result-title" tabindex="-1">${failed.length ? 'Cada fallo es un nuevo repaso.' : '¡Pleno de aciertos!'}</h1><p class="lead">Has respondido ${s.questions.length} ${s.questions.length === 1 ? 'pregunta' : 'preguntas'}. Sigue construyendo lo que sabes.</p><div class="result-stats"><div class="percent"><strong>${result.percent}<small>%</small></strong><span>de aciertos</span></div><div><strong class="good">${result.correct}</strong><span>Aciertos</span></div><div><strong class="bad">${result.wrong}</strong><span>Fallos</span></div></div><div class="result-actions">${failed.length ? '<button id="retry-wrong" class="primary">Repasar mis fallos ↗</button>' : ''}<button id="new-test" class="${failed.length ? 'secondary' : 'primary'}">Nuevo test aleatorio</button><button id="configure" class="text-button">Elegir otros temas →</button></div></section><section class="review" aria-labelledby="review-title"><div class="section-head"><h2 id="review-title">${failed.length ? 'Tus fallos, explicados' : 'Todo correcto en esta sesión'}</h2><span>${failed.length ? `${failed.length} para repasar` : 'Buen trabajo'}</span></div>${s.questions.map((q, i) => {
     const a = s.answers[i]!;
     if (a.correct) return '';
-    return `<details class="review-item"><summary><span class="review-number">${i + 1}</span><span>${escape(q.prompt)}</span><span class="review-plus" aria-hidden="true">+</span></summary><div class="review-body"><p class="bad"><strong>Tu respuesta ${letters[a.chosen]}:</strong> ${escape(q.options[a.chosen]!)}</p><p class="good"><strong>Correcta ${letters[q.answer]}:</strong> ${escape(q.options[q.answer])}</p><p>${escape(q.explanation)}</p>${source(q)}</div></details>`;
+    return `<details class="review-item"><summary><span class="review-number">${i + 1}</span><span>${escape(q.prompt)}</span><span class="review-plus" aria-hidden="true">+</span></summary><div class="review-body"><p class="bad"><strong>Tu respuesta ${letters[a.chosen]}:</strong> ${escape(q.options[a.chosen]!)}</p><p class="good"><strong>Correcta ${letters[q.answer]}:</strong> ${escape(q.options[q.answer])}</p><p>${escape(explainAnswer(q, a.chosen))}</p>${source(q)}</div></details>`;
   }).join('')}</section>`;
   app.querySelector('#retry-wrong')?.addEventListener('click', () => start(selectQuestions(failed, topics.map((_, i) => i + 1), failed.length), true));
   app.querySelector('#new-test')!.addEventListener('click', () => start(selectQuestions(bank, activeTopics(), count)));

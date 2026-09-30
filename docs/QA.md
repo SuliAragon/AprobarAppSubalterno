@@ -8,4 +8,14 @@ Recorridos en navegador realizados: selección de uno y dos temas; test de dos p
 
 Revisión visual: escritorio 1280 × 900 y móvil 390 × 844; inicio, pregunta corregida y resultados. Se permite desplazamiento vertical para temas y preguntas extensas; no debe existir desplazamiento horizontal ni controles cortados.
 
-Revisión del contenido: todos los hechos redactados en las fichas están representados; preguntas legales de 324 artículos del material; adaptaciones identificadas de exámenes, sin preguntas anuladas seleccionadas; cálculos con redondeo explícito; variantes de relación con atributos y opciones cruzadas. Los datos internos divergentes del manual se preguntan indicando el tema correspondiente.
+Revisión del contenido: todos los hechos redactados en las fichas están representados; preguntas legales de 306 artículos del material; adaptaciones identificadas de exámenes, sin preguntas anuladas seleccionadas; cálculos con redondeo explícito; variantes de relación con atributos y opciones cruzadas. Los datos internos divergentes del manual se preguntan indicando el tema correspondiente.
+
+## Correcciones específicas por elección
+
+Se verificaron cuatro mensajes distintos en cada una de las 3.000 preguntas y que cada fallo cite su propia opción. Las pruebas cubren preguntas negativas, categorías que se solapan, ausencia de mensajes legales genéricos, negaciones externas al hueco y revisión de oficio solicitada por interesados. La carga rechaza explicaciones ausentes, vacías, repetidas o incompatibles con el acierto.
+
+Cotejo de fuentes: 1.274 candidatos legales, 998 pasajes distintos localizados en la extracción del PDF; cero pasajes sin correspondencia. El banco utiliza 710 preguntas literales. Los 160 cálculos se recomputan y comparan con su respuesta. Se conserva el reparto 750 A/B/C/D, los diez temas y las 57 adaptaciones oficiales.
+
+Recorrido del navegador tras la corrección: misma pregunta de clases documentales fallada con B y repetida con A; razones diferentes que corrigen respectivamente juicio/constancia y decisión/documento del ciudadano. Se comprobó que el desplegable de resultados reproduce exactamente la explicación del error elegido y que repetir el fallo conserva pregunta y opciones.
+
+La revisión móvil de la explicación larga se comprobó a 390 × 844: ancho de documento igual al de pantalla, sin desbordamiento horizontal. El registro de auditoría se cotejó pregunta por pregunta contra el banco: mismas 3.000 identidades, respuestas, fuentes y cuatro huellas de explicación; cada cita literal coincide con su pasaje y localización verificada.

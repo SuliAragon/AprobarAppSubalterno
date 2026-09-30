@@ -103,7 +103,10 @@ TIME=['diez días','quince días','tres meses','seis meses','cuatro años','cinc
 NUMSETS=[['cuarenta por ciento','sesenta por ciento','treinta por ciento','setenta y cinco por ciento'],['50','25','100','250'],['6.000','60.000','120.000','600'],['60.001','6.001','120.001','600.001'],['120.000','60.000','6.000','600'],['treinta por ciento','veinte por ciento','cuarenta por ciento','cincuenta por ciento']]
 SETS=NUMSETS+[TIME]+SETS
 # Topics -> legal text boundaries, 1-indexed original extracted lines.
-SPECS=[(1,'Constitución Española', 'tema1.txt',243,None,6),
+SPECS=[(1,'Constitución Española', 'tema1.txt',239,283,6),
+       (1,'Constitución Española', 'tema1.txt',526,833,6),
+       (1,'Constitución Española', 'tema1.txt',935,949,6),
+       (1,'Constitución Española', 'tema1.txt',1042,1052,6),
        (2,'LO 3/2007','tema2.txt',389,1055,33),
        (2,'LO 1/2004','tema2.txt',1056,1486,33),
        (2,'Ley 12/2007 de Andalucía','tema2.txt',1491,2984,33),
@@ -136,21 +139,31 @@ def matches(sentence):
 def extract():
     result=[];seen=set()
     for topic,law,file,start,end,page0 in SPECS:
-        lines=(TEXT/file).read_text().splitlines();page=page0;blocks=[];article=None;title='';buf=[];firstpage=page
+        lines=(TEXT/file).read_text().splitlines();page=page0;blocks=[];article=None;title='';buf=[];firstpage=page;comment=False;preface=False
         def finish():
             if article and buf:blocks.append((article,title,firstpage,' '.join(buf)))
         for idx,line in enumerate(lines,1):
             p=re.search(r'===== PÁGINA (\d+)',line)
             if p:page=int(p.group(1))
             if idx<start or (end and idx>end):continue
-            h=re.match(r'^(?=A)Art[íi]culo\s+(\d+)(?:\s+(bis|ter|quater))?(?:\.\s*|\s+(?=\()|$)(.*)',line,re.I)
+            h=re.match(r'^(?:Artículo|Articulo|ARTÍCULO|ARTICULO)\s+(\d+)(?:\s+(bis|ter|quater))?(?:\.(?:\s+|$)|\s+(?=\()|$)(.*)',line)
             if h:
-                finish();article=h.group(1)+(' '+h.group(2).lower() if h.group(2) else '');title=h.group(3).strip().rstrip('.');buf=[];firstpage=page;continue
+                finish();article=h.group(1)+(' '+h.group(2).lower() if h.group(2) else '');title=h.group(3).strip().rstrip('.');buf=[];firstpage=page;comment=False
+                preface=law=='Ley 39/2015' and topic==4 and article in ['16','17']
+                if topic==1 and start==239:
+                    body=re.sub(r'^\([^)]*\)\.\s*','',h.group(3)).strip()
+                    if body:buf.append(body)
+                continue
+            if preface:
+                if re.match(r'^1\.\s',line):preface=False
+                else:continue
+            if line.startswith(('* A continuación','NOTA IMPORTANTE')):comment=True
+            if comment:continue
             line=clean_line(line)
             if line and article:buf.append(line)
         finish()
         for art,title,p,text in blocks:
-            text=re.sub(r'\([^)]*EXAMEN[^)]*\)','',text,flags=re.I)
+            text=re.sub(r'\([^)]*(?:EXAMEN|ES DECIR|ES OPTATIVO|OBLIGACIÓN,|por tanto, la interposición)[^)]*\)','',text,flags=re.I)
             text=re.sub(r'\b(?:EXAMEN|EXAMENES|IMPORTANTE)\b','',text)
             # Entire sentences/subsections only; do not drop qualifying clauses.
             sentences=re.split(r'(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ0-9])|\s+(?=[a-z]\)\s)',text)

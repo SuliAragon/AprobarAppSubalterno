@@ -6,6 +6,7 @@ export type Question = {
   options: [string, string, string, string];
   answer: 0 | 1 | 2 | 3;
   explanation: string;
+  optionExplanations: [string, string, string, string];
   source: { kind: 'manual' | 'exam-adapted'; label: string; reference: string; url?: string };
   format: 'concepto' | 'relación' | 'literal' | 'supuesto' | 'cálculo' | 'examen';
 };
